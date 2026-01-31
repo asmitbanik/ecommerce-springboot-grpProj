@@ -1,0 +1,42 @@
+server:
+  port: 8080
+
+spring:
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/ecommerce
+  mail:
+    host: smtp.mock
+    port: 2525
+    username: username
+    password: password
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls.enable: false
+
+jwt:
+  secret: change-me-to-a-secure-random-secret
+  expiration-ms: 3600000 # 1 hour
+
+file:
+  upload-dir: ./uploads
+
+spring:
+  cache:
+    type: caffeine
+    caffeine:
+      spec: "maximumSize=1000,expireAfterWrite=10m"
+
+spring:
+  redis:
+    host: localhost
+    port: 6379
+
+razorpay:
+  secret: change-me-for-webhook-validation
+
+logging:
+  level:
+    root: INFO

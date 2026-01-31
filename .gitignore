@@ -1,0 +1,10 @@
+target/
+*.log
+uploads/
+*.iml
+.idea/
+.vscode/
+.DS_Store
+/.mvn/
+/.settings/
+/*.jar
