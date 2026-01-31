@@ -7,12 +7,12 @@ import com.example.ecommerce.service.PaymentService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/payments")
-import org.springframework.beans.factory.annotation.Value;
 
 public class PaymentController {
 

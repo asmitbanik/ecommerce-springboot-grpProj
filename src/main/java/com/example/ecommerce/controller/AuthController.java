@@ -29,4 +29,9 @@ public class AuthController {
         AuthResponse response = userService.login(request);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/ping")
+    public ResponseEntity<String> ping() {
+        return ResponseEntity.ok("pong");
+    }
 }

@@ -15,6 +15,13 @@ spring:
         smtp:
           auth: false
           starttls.enable: false
+  cache:
+    type: caffeine
+    caffeine:
+      spec: "maximumSize=1000,expireAfterWrite=10m"
+  redis:
+    host: localhost
+    port: 6379
 
 jwt:
   secret: change-me-to-a-secure-random-secret
@@ -23,20 +30,10 @@ jwt:
 file:
   upload-dir: ./uploads
 
-spring:
-  cache:
-    type: caffeine
-    caffeine:
-      spec: "maximumSize=1000,expireAfterWrite=10m"
-
-spring:
-  redis:
-    host: localhost
-    port: 6379
-
 razorpay:
   secret: change-me-for-webhook-validation
 
 logging:
   level:
     root: INFO
+    org.springframework.security: DEBUG

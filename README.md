@@ -41,33 +41,53 @@ Open API docs: http://localhost:8080/swagger-ui.html
 - Redis is required for the distributed rate limiter and recommended for analytics caching. Configure `spring.redis.host` and `spring.redis.port` in `application.yml`.
 - Payment webhook now verifies HMAC-SHA256 signature using `razorpay.secret` (set in `application.yml`).
 
-## Run locally with Docker (recommended)
-1. Ensure Docker Desktop (or Docker Engine) is running on your machine (you must have a running Docker daemon).
-2. Build & start services (MongoDB, Redis, app):
+## Run locally (no Docker required)
 
-```bash
-cd ecommerce-backend
-docker compose up --build -d
-```
+This project can be run entirely on your local machine without Docker. You need the following installed:
 
-3. The app will be available at http://localhost:8080
+- **Java 21 (JDK)**
+- **Maven**
+- **MongoDB** running on `mongodb://localhost:27017` (default) — install MongoDB Community on Windows or use WSL
+- **Redis** running on `localhost:6379` (required for rate limiting)
 
-Environment variables (optional):
-- `ADMIN_USERNAME`, `ADMIN_PASSWORD`, `ADMIN_EMAIL` — used to create an initial admin user at start (defaults: `admin` / `admin123`).
+Steps to run locally:
 
-## Running tests locally (if you don't have local Maven installed)
-You can run the test suite inside a Maven container (Docker):
+1. Ensure MongoDB and Redis are running locally.
+2. Configure optional environment variables if you want a custom admin user:
+   - `ADMIN_USERNAME`, `ADMIN_PASSWORD`, `ADMIN_EMAIL` (defaults: `admin` / `admin123` / `admin@example.com`)
+3. Build and run with Maven:
 
 ```powershell
 # from the project root (Windows PowerShell)
-docker run --rm -v ${PWD}:/workspace -w /workspace maven:3.9-eclipse-temurin-21 mvn -q test
+mvn clean package
+java -jar target/ecommerce-backend-0.0.1-SNAPSHOT.jar
 ```
 
-Integration tests use Testcontainers and therefore require Docker to be running on your machine.
+Or run directly with Spring Boot:
 
-Or, if you have Maven installed locally:
+```powershell
+mvn spring-boot:run
+```
 
-mvn test
+4. The app will be available at http://localhost:8080
+
+## Running tests
+- Unit tests: `mvn test`
+  - Unit test summaries are written as JUnit tests under `src/test/java`. For example, `ProductServiceTest` verifies create and update error handling for products.
+- Integration tests that exercise MongoDB/Redis require those services to be running locally; tests are written to assume local services (no Docker/Testcontainers is required).
+
+## Services overview
+Core service responsibilities are documented in `docs/services.md`. This includes a concise description of `ProductService` behavior (pagination, caching, image uploads) and guidance for expected inputs and errors.
+
+## Quick API checks (after app is up)
+- Register: POST /api/auth/register {"username":"user","email":"u@example.com","password":"pass"}
+- Login: POST /api/auth/login {"username":"admin","password":"admin123"}
+- Create product (admin): POST /api/products (Bearer token)
+- Create payment: POST /api/payments/create {"amount":100, "orderId":"ord1"}
+- Webhook: POST /api/payments/webhook (HMAC-SHA256 signature header `X-Razorpay-Signature`)
+
+## CI
+A GitHub Actions workflow is included at `.github/workflows/ci.yml` to run the test suite on push. The workflow uses container services on GitHub Actions, but you do not need Docker locally to run the app or tests.
 
 ## Quick API checks (after app is up)
 - Register: POST /api/auth/register {"username":"user","email":"u@example.com","password":"pass"}

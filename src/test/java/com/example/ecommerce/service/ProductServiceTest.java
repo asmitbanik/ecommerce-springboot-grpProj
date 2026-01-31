@@ -18,6 +18,11 @@ import static org.mockito.Mockito.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(MockitoExtension.class)
+/**
+ * Unit tests for {@link ProductServiceImpl} covering basic create and update
+ * behavior. Tests use Mockito to stub repository interactions and verify
+ * expected exceptions and DTO conversions.
+ */
 public class ProductServiceTest {
 
     @Mock
@@ -29,6 +34,10 @@ public class ProductServiceTest {
     @BeforeEach
     public void setup() {}
 
+    /**
+     * Verifies that creating a product results in a persisted entity being
+     * translated back to a ProductDto with the expected values.
+     */
     @Test
     public void create_shouldSaveProductAndReturnDto() {
         ProductDto dto = new ProductDto();
@@ -47,6 +56,9 @@ public class ProductServiceTest {
         assertEquals(BigDecimal.TEN, out.getPrice());
     }
 
+    /**
+     * Ensures that updating a non-existing product throws IllegalArgumentException.
+     */
     @Test
     public void update_nonExisting_shouldThrow() {
         when(productRepository.findById("nope")).thenReturn(Optional.empty());
@@ -54,4 +66,4 @@ public class ProductServiceTest {
         dto.setName("X");
         assertThrows(IllegalArgumentException.class, () -> productService.update("nope", dto));
     }
-}
+} 

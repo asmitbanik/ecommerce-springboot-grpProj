@@ -22,6 +22,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+/**
+ * Default ProductService implementation that uses a JPA repository to
+ * perform CRUD operations and supports pagination, sorting, caching,
+ * and image uploads. Cache entries for product listings are evicted on
+ * create/update/delete operations to keep results fresh.
+ */
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
@@ -34,6 +40,10 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @CacheEvict(value = "products", allEntries = true)
+    /**
+     * Create and persist a new product.
+     * Cache for product listings is cleared when a new product is created.
+     */
     public ProductDto create(ProductDto dto) {
         Product p = new Product();
         BeanUtils.copyProperties(dto, p);
@@ -45,6 +55,10 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @CacheEvict(value = "products", allEntries = true)
+    /**
+     * Update an existing product. Throws IllegalArgumentException if the product
+     * does not exist.
+     */
     public ProductDto update(String id, ProductDto dto) {
         Product p = productRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Product not found"));
         p.setName(dto.getName());
@@ -59,11 +73,18 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @CacheEvict(value = "products", allEntries = true)
+    /**
+     * Delete a product by id. If the id is not found, the repository implementation
+     * will handle the behavior (may be no-op or thrown exception).
+     */
     public void delete(String id) {
         productRepository.deleteById(id);
     }
 
     @Override
+    /**
+     * Fetch a product by id and convert to DTO.
+     */
     public ProductDto getById(String id) {
         Product p = productRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Product not found"));
         ProductDto out = new ProductDto();
@@ -73,6 +94,10 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Cacheable(value = "products", key = "#page + '-' + #size + '-' + #sort + '-' + #category + '-' + #minPrice + '-' + #maxPrice")
+    /**
+     * List products using pageable parameters. Results are cached to improve
+     * performance. Cache key includes pagination, sort and filter criteria.
+     */
     public Page<ProductDto> list(int page, int size, String sort, String category, BigDecimal minPrice, BigDecimal maxPrice) {
         Sort s = Sort.unsorted();
         if (sort != null && !sort.isBlank()) {
@@ -96,6 +121,10 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @CacheEvict(value = "products", allEntries = true)
+    /**
+     * Save an uploaded image to the configured upload directory and persist
+     * the file path on the product entity.
+     */
     public void uploadImage(String id, MultipartFile file) {
         Product p = productRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Product not found"));
         File dir = new File(uploadDir);
@@ -110,4 +139,4 @@ public class ProductServiceImpl implements ProductService {
             throw new RuntimeException("File save failed", e);
         }
     }
-}
+} 
