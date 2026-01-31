@@ -15,7 +15,3 @@ Responsible for managing products in the system. Key behaviors:
 ### Examples
 - Create: call `ProductService.create(dto)` with required fields like name and price.
 - List: `ProductService.list(0, 20, "price,asc", "electronics", null, null)` returns a `Page<ProductDto>`.
-
----
-
-If you want, I can extend this page with sequence diagrams or example JSON payloads for each operation.

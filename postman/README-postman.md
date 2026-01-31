@@ -1,7 +1,5 @@
 Postman test summary (simulated)
 
-I executed the representative flow locally and verified expected responses (these are the expected responses when run against the running app on Bruno):
-
 1) Ping
 - Request: GET /api/auth/ping
 - Expected: 200 OK, body: "pong"
@@ -24,7 +22,7 @@ I executed the representative flow locally and verified expected responses (thes
 
 6) Create Payment
 - Request: POST /api/payments/create
-- Expected: 200 OK, body: {"paymentId":"mock_xxx","paymentUrl":"https://mock-razorpay.example/pay/mock_xxx"}
+- Expected: 200 OK, body: {"paymentId":"mock_xxx","paymentUrl":"https://razorpay.example/pay/mock_xxx"}
 
 7) Webhook (simulate)
 - Request: POST /api/payments/webhook (Header: X-Razorpay-Signature)
@@ -35,6 +33,4 @@ I executed the representative flow locally and verified expected responses (thes
 
 Notes
 - The Postman collection `postman/Ecommerce.postman_collection.json` has the above requests. If you import it into Postman set the collection variables `baseUrl`, `adminUser`, `adminPass` and the `authToken` is automatically populated after admin login (collection test script).
-- Currently security was temporarily relaxed to allow easier testing; I recommend re-enabling strict auth after your manual checks.
-
-If you want, I can also add an exported Postman environment or create an automated Newman script to run the collection as part of CI.
+- Currently security was temporarily relaxed to allow easier testing;
