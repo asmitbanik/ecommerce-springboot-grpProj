@@ -1,0 +1,109 @@
+{
+  "info": {
+    "_postman_id": "ecommerce-backend-collection",
+    "name": "E-commerce Backend",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "adminUser", "value": "admin" },
+    { "key": "adminPass", "value": "admin123" },
+    { "key": "authToken", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Ping",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": { "raw": "{{baseUrl}}/api/auth/ping", "host": ["{{baseUrl}}"], "path": ["api","auth","ping"] }
+      }
+    },
+    {
+      "name": "Register (user)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"username\": \"postman_user\",\n  \"email\": \"postman@example.com\",\n  \"password\": \"pass123\"\n}" },
+        "url": { "raw": "{{baseUrl}}/api/auth/register", "host": ["{{baseUrl}}"], "path": ["api","auth","register"] }
+      }
+    },
+    {
+      "name": "Login (user)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"username\": \"postman_user\",\n  \"password\": \"pass123\"\n}" },
+        "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api","auth","login"] }
+      }
+    },
+    {
+      "name": "Login (admin) - get token",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"username\": \"{{adminUser}}\",\n  \"password\": \"{{adminPass}}\"\n}" },
+        "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api","auth","login"] }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var json = pm.response.json();",
+              "if (json && json.token) {",
+              "  pm.collectionVariables.set('authToken', json.token);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Create Product (admin)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{authToken}}" }
+        ],
+        "body": { "mode": "raw", "raw": "{\n  \"name\": \"Postman Product\",\n  \"price\": 19.99,\n  \"category\": \"testing\"\n}" },
+        "url": { "raw": "{{baseUrl}}/api/products", "host": ["{{baseUrl}}"], "path": ["api","products"] }
+      }
+    },
+    {
+      "name": "List Products",
+      "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/products", "host": ["{{baseUrl}}"], "path": ["api","products"] } }
+    },
+    {
+      "name": "Get Product (by id)",
+      "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/products/:id", "host": ["{{baseUrl}}"], "path": ["api","products",":id"] }, "description": "Replace :id with product id returned from create" }
+    },
+    {
+      "name": "Create Payment",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"amount\": 100,\n  \"orderId\": \"order-postman-1\"\n}" },
+        "url": { "raw": "{{baseUrl}}/api/payments/create", "host": ["{{baseUrl}}"], "path": ["api","payments","create"] }
+      }
+    },
+    {
+      "name": "Webhook (simulate)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "X-Razorpay-Signature", "value": "<signature>" }
+        ],
+        "body": { "mode": "raw", "raw": "{\n  \"event\": \"payment.paid\",\n  \"payment_id\": \"mock_xxx\"\n}" },
+        "url": { "raw": "{{baseUrl}}/api/payments/webhook", "host": ["{{baseUrl}}"], "path": ["api","payments","webhook"] }
+      }
+    },
+    {
+      "name": "Get Product Views",
+      "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/analytics/product-views?productId=:id", "host": ["{{baseUrl}}"], "path": ["api","analytics","product-views"], "query": [{ "key": "productId", "value": ":id"}] }, "description": "Replace :id" }
+    }
+  ]
+}
